@@ -1,9 +1,15 @@
 USER_PROTO_DIR=user/v1
 USER_OUT_DIR=pkg/user/v1
 
-.PHONY: proto
+.PHONY: proto, clean
 
 proto:
+	make user-proto
+
+user-proto:
+	@echo "Generate user folders"
+	mkdir -p pkg/user/v1
+
 	@echo "🧩 Generating user gRPC code from proto files..."
 	protoc \
 		--proto_path=$(USER_PROTO_DIR) \
@@ -14,6 +20,5 @@ proto:
 		$$(find $(USER_PROTO_DIR) -name "*.proto")
 	@echo "✅ Generation complete!"
 
-.PHONY: clean
 clean:
 	rm -rf pkg/user

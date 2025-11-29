@@ -1,11 +1,14 @@
-module github.com/ol1mov-dev/protos
+module order-service
 
 go 1.25
 
 require (
 	google.golang.org/grpc v1.77.0
 	google.golang.org/protobuf v1.36.10
+	user-service v1.0.0
 )
+
+replace user-service => ./../user-servi
 
 require (
 	golang.org/x/net v0.47.0 // indirect
