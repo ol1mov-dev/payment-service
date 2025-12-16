@@ -5,6 +5,7 @@
       <functions>
         <function importPath="user-service/config" name="LoadConfig" />
         <function importPath="user-service/configs" name="LoadPgConfig" />
+        <function importPath="order-service/configs" name="LoadPgConfig" />
       </functions>
     </inspection_tool>
   </profile>

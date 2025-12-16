@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package payment.v1;
+
+// Путь для генерации Go-кода
+option go_package = "pkg/payment/v1/payment_v1;paymentv1";
+
+import "google/protobuf/timestamp.proto";
+
+message CreatePaymentRequest {
+  uint32 order_id = 1;
+  string user_id = 2;
+  double amount = 3;
+  string currency = 4;
+}
+
+message CreatePaymentResponse {
+  uint32 id = 1;
+  PaymentStatus status = 2;
+  google.protobuf.Timestamp created_at = 3;
+}
+
+message GetPaymentRequest {
+  uint32 payment_id = 1;
+}
+
+message GetPaymentResponse {
+  uint32 id = 1;
+  string order_id = 2;
+  string user_id = 3;
+  double amount = 4;
+  PaymentStatus status = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp confirmed_at = 7;
+}
+
+enum PaymentStatus {
+  PAYMENT_STATUS_UNSPECIFIED = 0;
+  PAYMENT_STATUS_PENDING = 1;
+  PAYMENT_STATUS_CONFIRMED = 2;
+  PAYMENT_STATUS_FAILED = 3;
+}
+
+service PaymentService {
+  rpc CreatePayment (CreatePaymentRequest) returns (CreatePaymentResponse);
+  rpc GetPayment (GetPaymentRequest) returns (GetPaymentResponse);
+}

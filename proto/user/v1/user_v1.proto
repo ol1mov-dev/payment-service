@@ -3,12 +3,8 @@ syntax = "proto3";
 package user.v1;
 option go_package = "pkg/user/user_v1;userv1";
 
-
 import "google/protobuf/timestamp.proto";
 
-// ---------------------------
-//      USER ENTITY
-// ---------------------------
 message User {
   uint32 id = 1;
   string email = 2;
@@ -20,9 +16,6 @@ message User {
   google.protobuf.Timestamp updated_at = 8;
 }
 
-// ---------------------------
-//      REQUESTS / RESPONSES
-// ---------------------------
 message CreateUserRequest {
   string email = 1;
   string password = 2;
@@ -64,9 +57,7 @@ message DeleteUserResponse {
   bool success = 1;
 }
 
-// ---------------------------
-//         SERVICE
-// ---------------------------
+// SERVICE
 service UserV1Service {
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
   rpc GetUser(GetUserRequest) returns (GetUserResponse);

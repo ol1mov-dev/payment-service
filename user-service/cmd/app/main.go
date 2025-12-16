@@ -3,9 +3,10 @@ package main
 import (
 	"log"
 	"net"
-	"user-service/internal/handler"
+	"user-service/internal/handlers"
 
 	userV1 "github.com/ol1mov-dev/protos/pkg/user/v1"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -24,12 +25,11 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer()
-	userV1.RegisterUserV1ServiceServer(grpcServer, &handler.UserServerHandler{})
+	userV1.RegisterUserV1ServiceServer(grpcServer, &handlers.UserServerHandler{})
 
 	reflection.Register(grpcServer)
 
 	if err := grpcServer.Serve(lis); err != nil {
-
 		log.Fatalf("failed to serve: %v", err)
 	}
 }

@@ -1,0 +1,96 @@
+syntax = "proto3";
+
+package warehouse.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "pkg/warehouse/warehouse_v1;warehousev1";
+
+// Сообщение для создания склада
+message CreateWarehouseRequest {
+  string address = 1;          // Адрес
+  string city = 2;             // Город
+  string country = 3;          // Страна
+  string postal_code = 4;      // Почтовый индекс (опционально)
+  string phone = 5;            // Телефон (опционально)
+  bool is_active = 6;          // Активен ли склад
+  uint32 capacity = 7;          // Вместимость
+  string description = 8;      // Описание
+}
+
+// Сообщение для обновления склада
+message UpdateWarehouseRequest {
+  int64 id = 1;                // ID склада
+  optional string address = 2; // Адрес
+  optional string city = 3;    // Город
+  optional string country = 4; // Страна
+  optional string postal_code = 5; // Почтовый индекс
+  optional string phone = 6;   // Телефон
+  optional bool is_active = 7; // Активен ли склад
+  optional uint32 capacity = 8; // Вместимость
+  optional string description = 9; // Описание
+}
+
+// Основное сообщение для представления склада
+message Warehouse {
+  int64 id = 1;                // Уникальный идентификатор
+  string address = 2;          // Адрес
+  string city = 3;             // Город
+  string country = 4;          // Страна
+  string postal_code = 5;      // Почтовый индекс
+  string phone = 6;            // Телефон
+  bool is_active = 7;          // Активен ли склад
+  uint32 capacity = 8;          // Вместимость
+  string description = 9;      // Описание
+  google.protobuf.Timestamp created_at = 10; // Дата создания
+  google.protobuf.Timestamp updated_at = 11; // Дата обновления
+}
+
+// Сообщение для получения склада по ID
+message GetWarehouseRequest {
+  int64 id = 1;                // ID склада
+}
+
+// Сообщение для получения списка складов
+message ListWarehousesRequest {
+  uint32 page = 1;              // Номер страницы
+  uint32 limit = 2;             // Количество элементов на странице
+  bool is_active = 3;          // Фильтр по активности
+  string country = 4;          // Фильтр по стране
+  string city = 5;             // Фильтр по городу
+}
+
+// Ответ со списком складов
+message ListWarehousesResponse {
+  repeated Warehouse warehouses = 1; // Список складов
+  uint32 total_count = 2;        // Общее количество складов
+  uint32 page = 3;               // Текущая страница
+  uint32 total_pages = 4;        // Общее количество страниц
+}
+
+// Сообщение для удаления склада (мягкое удаление)
+message DeleteWarehouseRequest {
+  int64 id = 1;                // ID склада
+}
+
+
+// Пустой ответ
+message EmptyResponse {}
+
+// Сервис для управления складами
+service WarehouseService {
+  // Создать новый склад
+  rpc CreateWarehouse(CreateWarehouseRequest) returns (Warehouse);
+
+  // Получить склад по ID
+  rpc GetWarehouse(GetWarehouseRequest) returns (Warehouse);
+
+  // Обновить информацию о складе
+  rpc UpdateWarehouse(UpdateWarehouseRequest) returns (Warehouse);
+
+  // Получить список складов с пагинацией и фильтрами
+  rpc ListWarehouses(ListWarehousesRequest) returns (ListWarehousesResponse);
+
+  // Удалить склад (мягкое удаление)
+  rpc DeleteWarehouse(DeleteWarehouseRequest) returns (EmptyResponse);
+}

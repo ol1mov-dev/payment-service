@@ -1,0 +1,190 @@
+syntax = "proto3";
+package order.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "pkg/order/order_v1;orderv1";
+
+// Основное сообщение заказа
+message Order {
+  uint32 id = 1;                    // Уникальный идентификатор
+  string public_order_number = 2;   // Публичный номер заказа
+  uint32 user_id = 3;               // ID пользователя
+  uint32 product_id = 4;            // ID товара
+  uint32 quantity = 5;              // Количество
+  OrderStatus status = 6;           // Текущий статус
+  float total_amount = 7;           // Общая сумма
+  uint32 warehouse_id = 8;          // ID склада (может быть 0 если не назначен)
+  google.protobuf.Timestamp created_at = 9;  // Дата создания
+  google.protobuf.Timestamp updated_at = 10; // Дата обновления
+}
+
+// Статусы заказа
+enum OrderStatus {
+  ORDER_STATUS_UNSPECIFIED = 0;  // Не указан
+  ORDER_STATUS_CREATED = 1;      // Заказ создан
+  ORDER_STATUS_PENDING_PAYMENT = 2;  // Ожидает оплаты
+  ORDER_STATUS_PAID = 3;         // Оплачен
+  ORDER_STATUS_PROCESSING = 4;   // В обработке
+  ORDER_STATUS_READY_FOR_SHIPMENT = 5;  // Готов к отгрузке
+  ORDER_STATUS_SHIPPED = 6;      // Отправлен
+  ORDER_STATUS_IN_TRANSIT = 7;   // В пути
+  ORDER_STATUS_OUT_FOR_DELIVERY = 8;  // У курьера
+  ORDER_STATUS_DELIVERED = 9;    // Доставлен
+  ORDER_STATUS_CANCELLED = 10;   // Отменен
+  ORDER_STATUS_REFUNDED = 11;    // Возвращен
+  ORDER_STATUS_FAILED = 12;      // Не удался
+}
+
+// Сообщение для создания заказа
+message CreateOrderRequest {
+  uint32 user_id = 2;               // ID пользователя
+  uint32 product_id = 3;            // ID товара
+  uint32 quantity = 4;              // Количество (должно быть > 0)
+  float total_amount = 5;           // Общая сумма
+  uint32 warehouse_id = 6;          // ID склада (опционально)
+  OrderStatus status = 7;           // Статус заказа (по умолчанию CREATED)
+}
+
+message CreateOrderResponse {
+  string public_order_number = 1;
+}
+
+message GetOrdersByUserIdRequest {
+  uint32 user_id = 1;
+}
+
+message GetOrdersByUserIdResponse {
+  repeated Order orders = 1;
+}
+
+message GetOrderByPublicOrderNumberRequest {
+  string public_order_number = 1;
+}
+
+message GetOrderByPublicOrderNumberResponse {
+  repeated Order orders = 1;
+}
+
+enum SortBy {
+  SORT_BY_UNSPECIFIED = 0;
+  SORT_BY_CREATED_AT = 1;        // По дате создания
+  SORT_BY_UPDATED_AT = 2;        // По дате обновления
+  SORT_BY_TOTAL_AMOUNT = 3;      // По сумме заказа
+}
+
+enum SortOrder {
+  SORT_ORDER_UNSPECIFIED = 0;
+  SORT_ORDER_ASC = 1;            // По возрастанию
+  SORT_ORDER_DESC = 2;           // По убыванию
+}
+
+// Сообщение для получения заказов по фильтрам
+message GetOrdersByFiltersRequest {
+  uint32 page = 1;                  // Номер страницы
+  uint32 limit = 2;                 // Количество элементов на странице
+
+  // Фильтры
+  optional uint32 user_id = 3;      // Фильтр по пользователю
+  optional uint32 product_id = 4;   // Фильтр по товару
+  optional uint32 warehouse_id = 5; // Фильтр по складу
+  repeated OrderStatus statuses = 6; // Фильтр по статусам (можно несколько)
+
+  // Диапазон дат
+  optional google.protobuf.Timestamp created_from = 7;  // Создано с
+  optional google.protobuf.Timestamp created_to = 8;    // Создано по
+
+  SortBy sort_by = 9;              // Поле для сортировки
+  SortOrder sort_order = 10;       // Направление сортировки
+}
+
+// Ответ со списком заказов
+message GetOrdersByFiltersResponse {
+  repeated Order orders = 1;       // Список заказов
+  uint32 total_count = 2;           // Общее количество заказов
+  uint32 page = 3;                  // Текущая страница
+  uint32 total_pages = 4;           // Общее количество страниц
+}
+
+// Сообщение для обновления заказа
+message UpdateOrderRequest {
+  optional string public_order_number = 2;  // Публичный номер заказа
+  optional uint32 user_id = 3;      // ID пользователя
+  optional uint32 product_id = 4;   // ID товара
+  optional uint32 quantity = 5;     // Количество
+  optional float total_amount = 6;  // Общая сумма
+  optional uint32 warehouse_id = 7; // ID склада
+  optional OrderStatus status = 8; // Статус заказа
+}
+
+message UpdateOrderResponse {
+  string public_order_number = 1;
+}
+
+// Сообщение для изменения статуса заказа
+message UpdateOrderStatusRequest {
+  string public_order_number = 1;
+  OrderStatus new_status = 2;
+}
+
+message UpdateOrderStatusResponse {
+  string public_order_number = 1;
+  OrderStatus new_status = 2;
+}
+
+// Запрос статистики
+message GetOrdersStatisticsRequest {
+  optional google.protobuf.Timestamp start_date = 1;  // Начальная дата
+  optional google.protobuf.Timestamp end_date = 2;    // Конечная дата
+  optional uint32 user_id = 3;      // Фильтр по пользователю (опционально)
+  optional uint32 warehouse_id = 4; // Фильтр по складу (опционально)
+}
+
+// Статистика по заказам
+message GetOrdersStatisticsResponse {
+  uint32 total_orders = 1;          // Всего заказов
+  float total_revenue = 2;  // Общая выручка
+  map<string, uint32> status_counts = 3;  // Количество заказов по статусам
+  map<uint32, uint32> user_order_counts = 4;  // Количество заказов по пользователям
+}
+
+// Сообщение для отмены заказа
+message CancelOrderRequest {
+  uint32 public_order_number = 1;
+  optional string cancellation_reason = 2;
+}
+
+// История изменений статуса заказа
+message OrderStatusHistory {
+  message StatusChange {
+    OrderStatus old_status = 1;    // Старый статус
+    OrderStatus new_status = 2;    // Новый статус
+    google.protobuf.Timestamp changed_at = 3;  // Время изменения
+    string changed_by = 4;         // Кто изменил (user_id или система)
+    string reason = 5;             // Причина изменения
+  }
+
+  uint32 order_id = 1;              // ID заказа
+  repeated StatusChange history = 2;  // История изменений
+}
+
+// Запрос истории статусов
+message GetOrderHistoryRequest {
+  uint32 public_order_number = 1;              // ID заказа
+}
+
+// Пустой ответ
+message EmptyResponse {}
+
+// Сервис для управления заказами
+service OrderV1Service {
+  // Создать новый заказ
+  rpc CreateOrder (CreateOrderRequest) returns (CreateOrderResponse);
+  rpc GetAllOrdersByUserId (GetOrdersByUserIdRequest) returns (GetOrdersByUserIdResponse);
+  rpc GetOrderByPublicOrderNumber (GetOrderByPublicOrderNumberRequest) returns (GetOrderByPublicOrderNumberResponse);
+  rpc GetAllOrdersByFilters (GetOrdersByFiltersRequest) returns (GetOrdersByFiltersResponse);
+
+  rpc UpdateOrder (UpdateOrderRequest) returns (UpdateOrderResponse);
+  rpc UpdateOrderStatus (UpdateOrderStatusRequest) returns (UpdateOrderStatusResponse);
+  rpc CancelOrder (CancelOrderRequest) returns (EmptyResponse);
+}

@@ -29,11 +29,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// ---------------------------
-//
-//	SERVICE
-//
-// ---------------------------
+// SERVICE
 type UserV1ServiceClient interface {
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
@@ -93,11 +89,7 @@ func (c *userV1ServiceClient) DeleteUser(ctx context.Context, in *DeleteUserRequ
 // All implementations must embed UnimplementedUserV1ServiceServer
 // for forward compatibility.
 //
-// ---------------------------
-//
-//	SERVICE
-//
-// ---------------------------
+// SERVICE
 type UserV1ServiceServer interface {
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)

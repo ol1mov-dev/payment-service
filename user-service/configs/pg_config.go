@@ -23,12 +23,12 @@ func LoadPgConfig() (*PgConfig, error) {
 		return &PgConfig{}, err
 	}
 
-	host := os.Getenv("POSTGRES_HOST")
-	port := os.Getenv("POSTGRES_PORT")
-	user := os.Getenv("POSTGRES_USER")
-	password := os.Getenv("POSTGRES_PASSWORD")
-	database := os.Getenv("POSTGRES_DB")
-	sslmode := os.Getenv("POSTGRES_SSLMODE")
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("DB_PORT")
+	user := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASSWORD")
+	database := os.Getenv("DB_NAME")
+	sslmode := os.Getenv("DB_SSLMODE")
 
 	return &PgConfig{host, port, user, password, database, sslmode}, nil
 }
